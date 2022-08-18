@@ -65,7 +65,7 @@ const inputClosePin = document.querySelector('.form__input--pin');
 /////////////////////////////////////////////////
 // FUNCTIONS
 
-/// displayMovements
+///// displayMovements
 const displayMovements = function (movements) {
   containerMovements.innerHTML = '';
 
@@ -85,7 +85,7 @@ const displayMovements = function (movements) {
 
 displayMovements(account1.movements);
 
-/// generate username
+///// generate username
 const generateUsername = function (accnts) {
   accnts.forEach(accnt => {
     accnt.username = accnt.owner
@@ -98,5 +98,13 @@ const generateUsername = function (accnts) {
 
 generateUsername(accounts);
 
-// console.log(accounts);
+///// print balance
+const printBalance = function (accnt) {
+  labelBalance.innerHTML = '';
+
+  const balance = accnt.movements.reduce((acc, cur) => acc + cur, 0);
+  const html = `<p class="balance__value">${balance}€</p>`;
+  labelBalance.insertAdjacentHTML('afterbegin', html);
+};
+printBalance(account1);
 /////////////////////////////////////////////////
