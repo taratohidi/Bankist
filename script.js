@@ -65,7 +65,7 @@ const inputClosePin = document.querySelector('.form__input--pin');
 /////////////////////////////////////////////////
 // FUNCTIONS
 
-///// displayMovements
+///// display movements
 const displayMovements = function (movements) {
   containerMovements.innerHTML = '';
 
@@ -85,6 +85,28 @@ const displayMovements = function (movements) {
 
 displayMovements(account1.movements);
 
+///// display balance
+const displayBalance = function (accnt) {
+  const balance = accnt.movements.reduce((acc, cur) => acc + cur, 0);
+  labelBalance.textContent = `${balance} EUR`;
+};
+displayBalance(account1);
+
+///// display summary
+const displaySummary = function (accnt) {
+  const inAmount = accnt.movements
+    .filter(item => item > 0)
+    .reduce((acc, cur) => acc + cur, 0);
+  const outAmount = accnt.movements
+    .filter(item => item < 0)
+    .reduce((acc, cur) => acc + cur, 0);
+  labelSumIn.textContent = `${inAmount} EUR`;
+  labelSumOut.textContent = `${outAmount} EUR`;
+  labelSumInterest.textContent = `${accnt.interestRate} EUR`;
+};
+
+displaySummary(account1);
+
 ///// generate username
 const generateUsername = function (accnts) {
   accnts.forEach(accnt => {
@@ -98,13 +120,4 @@ const generateUsername = function (accnts) {
 
 generateUsername(accounts);
 
-///// print balance
-const printBalance = function (accnt) {
-  labelBalance.innerHTML = '';
-
-  const balance = accnt.movements.reduce((acc, cur) => acc + cur, 0);
-  const html = `<p class="balance__value">${balance}€</p>`;
-  labelBalance.insertAdjacentHTML('afterbegin', html);
-};
-printBalance(account1);
 /////////////////////////////////////////////////
