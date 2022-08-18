@@ -65,6 +65,7 @@ const inputClosePin = document.querySelector('.form__input--pin');
 /////////////////////////////////////////////////
 // FUNCTIONS
 
+/// displayMovements
 const displayMovements = function (movements) {
   containerMovements.innerHTML = '';
 
@@ -83,4 +84,19 @@ const displayMovements = function (movements) {
 };
 
 displayMovements(account1.movements);
+
+/// generate username
+const generateUsername = function (accnts) {
+  accnts.forEach(accnt => {
+    accnt.username = accnt.owner
+      .toLowerCase()
+      .split(' ')
+      .map(item => item[0])
+      .join('');
+  });
+};
+
+generateUsername(accounts);
+
+// console.log(accounts);
 /////////////////////////////////////////////////
