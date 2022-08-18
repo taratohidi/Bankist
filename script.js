@@ -142,9 +142,9 @@ generateUsername(accounts);
 // Event handlers
 let currentAccount;
 
-btnLogin.addEventListener('click', function (e) {
+btnLogin.addEventListener('click', event => {
   // Prevent form from submitting
-  e.preventDefault();
+  event.preventDefault();
 
   currentAccount = accounts.find(
     acc => acc.username === inputLoginUsername.value
@@ -166,8 +166,8 @@ btnLogin.addEventListener('click', function (e) {
   }
 });
 
-btnTransfer.addEventListener('click', function (e) {
-  e.preventDefault();
+btnTransfer.addEventListener('click', event => {
+  event.preventDefault();
   const amount = Number(inputTransferAmount.value);
   const receiverAcc = accounts.find(
     acc => acc.username === inputTransferTo.value
@@ -187,4 +187,25 @@ btnTransfer.addEventListener('click', function (e) {
     // Update UI
     updateUI(currentAccount);
   }
+});
+
+btnClose.addEventListener('click', event => {
+  event.preventDefault();
+
+  if (
+    inputCloseUsername.value === currentAccount.username &&
+    Number(inputClosePin.value) === currentAccount.pin
+  ) {
+    const index = accounts.findIndex(
+      accnt => accnt.username === currentAccount.username
+    );
+    accounts.splice(index, 1);
+
+    containerApp.style.opacity = 0;
+  }
+  inputCloseUsername.value = inputClosePin.value = '';
+});
+
+btnLoan.addEventListener('click', event => {
+  event.preventDefault();
 });
