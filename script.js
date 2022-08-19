@@ -89,7 +89,9 @@ const inputClosePin = document.querySelector('.form__input--pin');
 
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
-// FUNCTIONS
+
+///////////////////////////////////////
+// DISPLAY ELEMENTS
 
 ///// display movements
 const displayMovements = function (accnt, sort = false) {
@@ -157,6 +159,37 @@ const updateUI = function (account) {
   displaySummary(account);
 };
 
+const startLogOutTimer = function () {
+  const tick = function () {
+    const min = String(Math.trunc(time / 60)).padStart(2, 0);
+    const sec = String(time % 60).padStart(2, 0);
+
+    // In each call, print the remaining time to UI
+    labelTimer.textContent = `${min}:${sec}`;
+
+    // When 0 seconds, stop timer and log out user
+    if (time === 0) {
+      clearInterval(timer);
+      labelWelcome.textContent = 'Log in to get started';
+      containerApp.style.opacity = 0;
+    }
+
+    // Decrease 1s
+    time--;
+  };
+  // Set time to 5 minutes
+  let time = 120;
+
+  // Call the timer every second
+  tick();
+  const timer = setInterval(tick, 1000);
+
+  return timer;
+};
+
+///////////////////////////////////////
+// GENERATE VARIABLES
+
 ///// generate username
 const generateUsername = function (accnts) {
   accnts.forEach(accnt => {
@@ -188,7 +221,6 @@ const formatMovementDate = function (date) {
     Math.round(Math.abs(date2 - date1) / (1000 * 60 * 60 * 24));
 
   const daysPassed = calcDaysPassed(new Date(), date);
-  console.log(daysPassed);
 
   if (daysPassed === 0) return 'Today';
   if (daysPassed === 1) return 'Yesterday';
@@ -202,12 +234,12 @@ const formatMovementDate = function (date) {
 
 ///////////////////////////////////////
 // Event handlers
-let currentAccount;
+let currentAccount, timer;
 
 // Fake ALways log in
-currentAccount = account1;
-updateUI(currentAccount);
-containerApp.style.opacity = 100;
+// currentAccount = account1;
+// updateUI(currentAccount);
+// containerApp.style.opacity = 100;
 
 // Generate now date
 const now = new Date();
@@ -235,6 +267,10 @@ btnLogin.addEventListener('click', event => {
     // Clear input fields
     inputLoginUsername.value = inputLoginPin.value = '';
     inputLoginPin.blur();
+
+    // Timer;
+    if (timer) clearInterval(timer);
+    timer = startLogOutTimer();
 
     // Update UI
     updateUI(currentAccount);
@@ -294,13 +330,14 @@ btnLoan.addEventListener('click', event => {
   const loan = Number(inputLoanAmount.value);
 
   if (loan > 0 && currentAccount.movements.some(mov => mov >= 0.1 * loan)) {
-    currentAccount.movements.push(loan);
-    currentAccount.movementsDates.push(new Date().toISOString());
+    setTimeout(() => {
+      currentAccount.movements.push(loan);
+      currentAccount.movementsDates.push(new Date().toISOString());
+      updateUI(currentAccount);
+    }, 2500);
   }
 
   inputLoanAmount.value = '';
-
-  updateUI(currentAccount);
 });
 
 // Sort BTN handler
@@ -314,8 +351,4 @@ btnSort.addEventListener('click', event => {
 //////Random Number
 // const randomInt = (min, max) => {
 //   Math.trunc(Math.random() * (max - min) + 1) + min;
-// };
-
-// const generateDatePassed = (date1, date2) => {
-//   Math.abs(date2 - date1) / (1000 * 60 * 60 * 24);
 // };
