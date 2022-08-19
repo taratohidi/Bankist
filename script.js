@@ -15,10 +15,10 @@ const account1 = {
     '2019-12-23T07:42:02.383Z',
     '2020-01-28T09:15:04.904Z',
     '2020-04-01T10:17:24.185Z',
-    '2020-05-08T14:11:59.604Z',
-    '2020-05-27T17:01:17.194Z',
-    '2020-07-11T23:36:17.929Z',
-    '2020-07-12T10:51:36.790Z',
+    '2022-08-13T14:11:59.604Z',
+    '2022-08-16T17:01:17.194Z',
+    '2022-08-18T23:36:17.929Z',
+    '2022-08-19T10:51:36.790Z',
   ],
   currency: 'EUR',
   locale: 'pt-PT', // de-DE
@@ -101,12 +101,12 @@ const displayMovements = function (accnt, sort = false) {
 
   movs.forEach((movement, i) => {
     const type = movement > 0 ? 'deposit' : 'withdrawal';
-    const date = accnt.movementsDates[i];
+    const date = new Date(accnt.movementsDates[i]);
 
     const html = ` 
     <div class="movements__row">
     <div class="movements__type movements__type--${type}">${i + 1} ${type}</div>
-    <div class="movements__date">${generateDate(date)}</div>
+    <div class="movements__date">${formatMovementDate(date)}</div>
     <div class="movements__value">${movement.toFixed(2)}</div>
     </div>`;
 
@@ -178,6 +178,28 @@ const generateDate = date => {
   return `${year}/${month}/${day}`;
 };
 
+///// generate date passed
+// const generateDatePassed = (date1, date2) => {
+//   Math.round(Math.abs(date2 - date1) / (1000 * 60 * 60 * 24));
+// };
+
+const formatMovementDate = function (date) {
+  const calcDaysPassed = (date1, date2) =>
+    Math.round(Math.abs(date2 - date1) / (1000 * 60 * 60 * 24));
+
+  const daysPassed = calcDaysPassed(new Date(), date);
+  console.log(daysPassed);
+
+  if (daysPassed === 0) return 'Today';
+  if (daysPassed === 1) return 'Yesterday';
+  if (daysPassed <= 7) return `${daysPassed} days ago`;
+
+  const day = `${date.getDate()}`.padStart(2, 0);
+  const month = `${date.getMonth() + 1}`.padStart(2, 0);
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+};
+
 ///////////////////////////////////////
 // Event handlers
 let currentAccount;
@@ -190,8 +212,8 @@ containerApp.style.opacity = 100;
 // Generate now date
 const now = new Date();
 const nowDate = generateDate(now);
-const hour = now.getHours() + 1;
-const min = now.getMinutes();
+const hour = `${now.getHours() + 1}`.padStart(2, 0);
+const min = `${now.getMinutes() + 1}`.padStart(2, 0);
 labelDate.textContent = `${nowDate}, ${hour}: ${min}`;
 
 /////// Login btn handler
@@ -219,6 +241,7 @@ btnLogin.addEventListener('click', event => {
   }
 });
 
+// Transfer BTN handler
 btnTransfer.addEventListener('click', event => {
   event.preventDefault();
   const amount = +inputTransferAmount.value;
@@ -237,11 +260,16 @@ btnTransfer.addEventListener('click', event => {
     currentAccount.movements.push(-amount);
     receiverAcc.movements.push(amount);
 
+    // Add transfer date
+    currentAccount.movementsDates.push(generateDate(new Date()));
+    receiverAcc.movementsDates.push(generateDate(new Date()));
+
     // Update UI
     updateUI(currentAccount);
   }
 });
 
+// Close BTN handler
 btnClose.addEventListener('click', event => {
   event.preventDefault();
 
@@ -259,6 +287,7 @@ btnClose.addEventListener('click', event => {
   inputCloseUsername.value = inputClosePin.value = '';
 });
 
+// Loan BTN handler
 btnLoan.addEventListener('click', event => {
   event.preventDefault();
 
@@ -266,6 +295,7 @@ btnLoan.addEventListener('click', event => {
 
   if (loan > 0 && currentAccount.movements.some(mov => mov >= 0.1 * loan)) {
     currentAccount.movements.push(loan);
+    currentAccount.movementsDates.push(new Date().toISOString());
   }
 
   inputLoanAmount.value = '';
@@ -273,6 +303,7 @@ btnLoan.addEventListener('click', event => {
   updateUI(currentAccount);
 });
 
+// Sort BTN handler
 let sorted = false;
 btnSort.addEventListener('click', event => {
   event.preventDefault();
@@ -285,11 +316,6 @@ btnSort.addEventListener('click', event => {
 //   Math.trunc(Math.random() * (max - min) + 1) + min;
 // };
 
-// generate date
-// let date = new Date(account1.movementsDates[0]);
-// const year = date.getFullYear();
-// const month = date.getMonth() + 1;
-// const day = date.getDate();
-// date = `${year}.${month}.${day}`;
-
-// console.log(date);
+// const generateDatePassed = (date1, date2) => {
+//   Math.abs(date2 - date1) / (1000 * 60 * 60 * 24);
+// };
